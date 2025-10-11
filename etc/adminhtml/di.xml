@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="MageOS\AdvancedWidget\Block\Adminhtml\Renderer\Repeatable">
+        <arguments>
+            <argument name="customFields" xsi:type="array">
+                <item name="selectFields" xsi:type="array">
+                    <item name="type" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">MageOS_AdvancedWidget/js/field/select</item>
+                    <item name="template" xsi:type="string">MageOS_AdvancedWidget::widget/field/rows/field/select.phtml</item>
+                </item>
+                <item name="imageFields" xsi:type="array">
+                    <item name="type" xsi:type="string">image</item>
+                    <item name="component" xsi:type="string">MageOS_AdvancedWidget/js/field/image</item>
+                    <item name="template" xsi:type="string">MageOS_AdvancedWidget::widget/field/rows/field/image.phtml</item>
+                </item>
+                <item name="productFields" xsi:type="array">
+                    <item name="type" xsi:type="string">product</item>
+                    <item name="dataTmpl" xsi:type="array">
+                        <item name="nameSuffix" xsi:type="string">_name</item>
+                        <item name="skuSuffix" xsi:type="string">_sku</item>
+                        <item name="imageSuffix" xsi:type="string">_image</item>
+                    </item>
+                    <item name="component" xsi:type="string">MageOS_AdvancedWidget/js/field/product</item>
+                    <item name="mainFormHtmlBlock" xsi:type="object">MageOS\AdvancedWidget\Block\Adminhtml\Product\Widget\Chooser</item>
+                    <item name="template" xsi:type="string">MageOS_AdvancedWidget::widget/field/rows/field/product.phtml</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Widget\Model\Widget">
+        <plugin name="mageos_save_widget_repeatable_items" type="MageOS\AdvancedWidget\Plugin\SaveRepeatableItems"/>
+    </type>
+    <type name="Magento\Cms\Block\Adminhtml\Wysiwyg\Images\Content">
+        <plugin name="mageos_wysiwyg_image_content" type="MageOS\AdvancedWidget\Plugin\WysiwygImagePlugin"/>
+    </type>
+</config>

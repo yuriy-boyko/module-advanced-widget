@@ -1,0 +1,52 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$fieldName = $block->getData('fieldName');
+$parameterName = $block->getData('parameterName');
+$htmlId = $block->getData('htmlId');
+$htmlName = $block->getData('htmlName');
+$fieldData = $block->getData('fieldData');
+$isModal = $block->getData('isModal');
+$isRequired = isset($fieldData['required']) && $fieldData['required'];
+?>
+<div class="admin__product-field">
+<button type="button" class="action-default scalable primary"
+        <?php if ($isModal): ?>
+        id="<?= /** @noEscape */ "edit_{$fieldName}_button_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+        <?php else: ?>
+        id="<?= /** @noEscape */ "{$fieldName}_button_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+        <?php endif; ?>>
+    <span><?= $escaper->escapeHtml(__('Select Product'));?></span>
+</button>
+<input data-field="<?= /** @noEscape */ $fieldName; ?>"
+        <?php if ($isModal): ?>
+        id="edit_<?= /** @noEscape */ "{$fieldName}_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+        data-name="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+        <?php else: ?>
+        id="<?= /** @noEscape */ "{$fieldName}_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+        <?php endif; ?>
+        data-type="<?= /** @noEscape */ $fieldData['type'] ?>"
+        name="<?= /** @noEscape */ $htmlName; ?>[<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+        type="hidden"
+        value="<%- data.<?=  $fieldName; ?> %>"
+        <?php if ($isRequired): ?>
+        aria-invalid="false"
+        <?php endif; ?>
+        class="product-input <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>" />
+<div class="file-uploader-preview" style="display:none; padding: 10px;">
+    <div><strong class="preview-name"><%- data.<?= /** @noEscape */ $fieldName; ?>_name %></strong></div>
+    <div class="preview-sku"><%- data.<?= /** @noEscape */ $fieldName; ?>_sku %></div>
+    <img class="preview-image" width="75" style="padding-top: 10px;" src="<%- data.<?= /** @noEscape */ $fieldName; ?>_image %>" />
+    <div class="actions">
+        <button type="button" class="action-remove" data-linked-input="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]">
+            <span><?= /** @noEscape */ $escaper->escapeJs(__('Delete product')); ?></span>
+        </button>
+    </div>
+</div>
+</div>

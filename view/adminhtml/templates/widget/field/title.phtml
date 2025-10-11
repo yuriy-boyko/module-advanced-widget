@@ -1,0 +1,9 @@
+<?php
+
+use Magento\Backend\Block\Widget\Form\Renderer\Fieldset\Element;
+use Magento\Framework\Escaper;
+
+/** @var Element $block  */
+/** @var Escaper $escaper */
+?>
+<?= /** @noEscape */ $block->getElement()->getNote()->getText(); ?>

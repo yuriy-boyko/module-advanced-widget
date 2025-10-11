@@ -1,0 +1,70 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$element = $block->getData('element');
+$htmlId = $element->getHtmlId();
+$htmlName = $element->getName();
+$fields = $block->getData('fields');
+$parameterName = $block->getData('parameterName');
+?>
+<tr data-id="<%- data.index %>" data-parameter-name="<?= $parameterName ?>" class="<?= /** @noEscape */ $htmlId; ?>">
+    <td class="order-handle"><span class="icon-grid"></span></td>
+    <?php $editModalActive = false; ?>
+    <?php foreach ($fields as $fieldName => $fieldData): ?>
+        <?php
+        $cssDisplay = "table-cell";
+        $isRequired = isset($fieldData['required']) && $fieldData['required'];
+        if (isset($fieldData['preview']) && $fieldData['preview'] === false) {
+            $cssDisplay = "none";
+            $editModalActive = true;
+        }
+        ?>
+        <td class="repeater-column" style="display: <?= /** @noEscape */ $cssDisplay?>;">
+            <div class="repeater-column__content <?php if (isset($fieldData["description"])): ?>with_tooltip<?php endif; ?>">
+            <?php if (isset($fieldData["description"])): ?>
+                <div class="admin__field-<?= /** @noEscape */ "{$htmlId}_{$fieldName}"; ?> admin__field-tooltip">
+                    <a class="admin__field-tooltip-action action-help" target="_blank" tabindex="1" data-bind="attr: {href: tooltip.link}"></a>
+                    <div class="admin__field-tooltip-content" data-bind="text: tooltip.description"><?= /** @noEscape */ str_replace("'", "\'", $fieldData["description"]); ?></div>
+                </div>
+            <?php endif; ?>
+            <?php if ($fieldData['type'] === 'text'): ?>
+                <input data-field="<?= /** @noEscape */ $fieldName; ?>"
+                       type="text"
+                       id="<?= /** @noEscape */ "{$fieldName}_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+                       name="<?= /** @noEscape */ $htmlName; ?>[<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+                       value="<%- data.<?=  $fieldName; ?> %>"
+                       <?php if ($isRequired): ?>
+                       aria-invalid="false"
+                       <?php endif; ?>
+                       class="widget-option input-text admin__control-text <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>" />
+            <?php endif; ?>
+
+            <?php if ($fieldData['type'] === 'textarea'): ?>
+                <textarea data-field="<?= /** @noEscape */ $fieldName; ?>"
+                          id="<?= /** @noEscape */ "{$fieldName}_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+                          name="<?= /** @noEscape */ $htmlName; ?>[<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+                          <?php if ($isRequired): ?>
+                          aria-invalid="false"
+                          <?php endif; ?>
+                          class="widget-option input-textarea admin__control-text <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>"><%- data.<?= /** @noEscape */ $fieldName; ?> %></textarea>
+            <?php endif; ?>
+
+            <?= $block->addCustomField($fieldName, $fieldData['type'], $parameterName, $htmlId, $htmlName, $fieldData); ?>
+            </div>
+        </td>
+    <?php endforeach; ?>
+    <td class="col-delete"><input type="hidden" data-field="delete" name="<?= /** @noEscape */ $htmlName; ?>[<%- data.index %>][delete]" class="delete" value="" />
+        <button type="button" class="action-delete scalable icon-btn" onclick="return <?= /** @noEscape */ $htmlId; ?>RowsControl.deleteItem(event);">
+            <span><?= /** @noEscape */ $escaper->escapeJs(__("Delete")) ?></span>
+        </button>
+        <?php if ($editModalActive): ?>
+        <i class="icon-admin-pagebuilder-systems" style="font-size:2rem; cursor:pointer; margin-left: 20px;" onclick="return <?= /** @noEscape */ $htmlId; ?>RowsControl.editItem(event);"></i>
+        <?php endif; ?>
+    </td>
+</tr>

@@ -1,0 +1,39 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$fieldName = $block->getData('fieldName');
+$parameterName = $block->getData('parameterName');
+$htmlId = $block->getData('htmlId');
+$htmlName = $block->getData('htmlName');
+$fieldData = $block->getData('fieldData');
+$isModal = $block->getData('isModal');
+$isRequired = isset($fieldData['required']) && $fieldData['required'];
+?>
+<select data-field="<?= /** @noEscape */ $fieldName; ?>"
+        <?php if ($isModal): ?>
+        id="<?= /** @noEscape */ "edit_select_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+        data-name="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+        <?php else: ?>
+        id="<?= /** @noEscape */ "select_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+        <?php endif; ?>
+        data-type="<?= /** @noEscape */ $fieldData['type'] ?>"
+        value="<%- data.<?= $fieldName; ?> %>"
+        name="<?= /** @noEscape */ $htmlName; ?>[<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+        <?php if ($isRequired): ?>
+        aria-invalid="false"
+        <?php endif; ?>
+        class="widget-option select admin__control-select <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>">
+    <?php foreach ($fieldData['options'] as $value => $label): ?>
+        <option value="<?= /** @noEscape */ $value; ?>"
+        <% if(data.<?= $fieldName ?> == String(\'<?= $escaper->escapeJs($value); ?>\')){ %> selected="selected" <% } %>
+        >
+            <?= /** @noEscape */ $label; ?>
+        </option>
+    <?php endforeach; ?>
+</select>

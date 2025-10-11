@@ -1,0 +1,290 @@
+<?php
+declare(strict_types=1);
+
+use MageOS\AdvancedWidget\Block\Adminhtml\Renderer\Repeatable;
+use Magento\Framework\Escaper;
+
+/** @var Repeatable $block */
+/** @var Escaper $escaper */
+
+$element = $block->getElement();
+$htmlId = $element->getHtmlId();
+$htmlName = $element->getName();
+$id = uniqid();
+$rows = $block->getRows();
+$parameterName = $block->getParameterName();
+?>
+<div class="repeatable_widget admin__field field" id="repeatable_widget_<?= $htmlId; ?>">
+    <label class="label admin__field-label">
+        <span><?= $escaper->escapeHtml($element->getLabel()); ?></span>
+    </label>
+    <div class="admin__field-control control">
+        <table class="admin__control-table">
+            <thead>
+            <tr>
+                <th><?= $escaper->escapeHtml(__('Sort order')); ?></th>
+                <?php foreach ($rows as $rowData): ?>
+                    <?php if (!isset($rowData["preview"]) || $rowData["preview"] !== false): ?>
+                        <th><?= $escaper->escapeHtml(__($rowData['label'])); ?><?= isset($rowData['required']) && $rowData['required'] ? ' *': ''; ?></th>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+                <th><?= $escaper->escapeHtml(__('Action')); ?></th>
+            </tr>
+            </thead>
+            <tbody id="<?= $escaper->escapeHtmlAttr(/** @noEscape */ $htmlId); ?>_container"></tbody>
+            <tfoot>
+            <tr>
+                <td  class="col-actions-add" colspan="<?= (int) count($rows) + 1; ?>">
+                    <?= $block->getAddButtonHtml(); ?>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+        <div class="note admin__field-note">
+            <?= $escaper->escapeHtml($element->getNote()); ?>
+        </div>
+    </div>
+</div>
+<?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+<?php if (isset($customFieldData['mainFormHtmlBlock'])): ?>
+<?= $block->getMainFormHtml($customFieldData['mainFormHtmlBlock'], $id); ?>
+<?php endif; ?>
+<?php endforeach; ?>
+<?php $rowEditorId = "mageos_row_editor_" . $id; ?>
+<div id="<?= /** @noEscape */ $rowEditorId; ?>" style="display:none;"></div>
+<script>
+    require([
+        'mage/template',
+        'jquery',
+        'Magento_Ui/js/modal/modal',
+        'underscore',
+        <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+        '<?= $customFieldData['component'] ?>',
+        <?php endforeach; ?>
+        'prototype',
+        'mage/adminhtml/form',
+        'mage/adminhtml/browser',
+        'mage/validation'
+    ], function (
+        mageTemplate,
+        $j,
+        modal,
+        _<?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>,<?= $customFieldName?> <?php endforeach; ?>
+    ) {
+        let <?= /** @noEscape */ $htmlId; ?>RowsTemplate = '<?= $block->getRepeaterTemplate($element, $rows, $parameterName); ?>';
+
+        let <?= /** @noEscape */ $htmlId; ?>EditRowTemplate = '<?= $block->getRepeaterEditModalTemplate($element, $rows, $parameterName); ?>';
+
+        <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+        let <?= $customFieldName ?>Row = ['<?= $customFieldData['type']; ?>'];
+        <?php endforeach; ?>
+
+        <?php foreach ($block->getRows() as $fieldName => $rowData): ?>
+            <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+                <?php if ($rowData['type'] == $customFieldData['type']): ?>
+                    <?= $customFieldName ?>Row.push('<?= /** @noEscape */ $fieldName; ?>');
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+
+        let <?= /** @noEscape */ $htmlId; ?>RowsControl = {
+            template: mageTemplate(<?= /** @noEscape */ $htmlId; ?>RowsTemplate),
+            editTemplate: mageTemplate(<?=  /** @noEscape */ $htmlId; ?>EditRowTemplate),
+            itemsCount: 0,
+            uploadImageUrl: '<?= $escaper->escapeJs($escaper->escapeUrl($block->getUploadButtonOnClickActionUrl())); ?>?isAjax=true&current_tree_path=d3lzaXd5Zw--',
+            mediaUrl: '<?= $escaper->escapeJs($escaper->escapeUrl($block->getMediaUrl())); ?>',
+            rows: [],
+            addItem: function () {
+                let self = this,
+                    data = {
+                        index: this.itemsCount
+                    },
+                    dataTmpl = {
+                        <?php foreach ($block->getRows() as $fieldName => $rowData): ?>
+                            <?= /** @noEscape */ $fieldName ?>: "",
+                            <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+                            <?php if ($rowData['type'] == $customFieldData['type'] && isset($customFieldData['dataTmpl']) && is_array($customFieldData['dataTmpl'])): ?>
+                            <?php foreach ($customFieldData['dataTmpl'] as $suffixName => $suffix): ?>
+                            <?= /** @noEscape */ $fieldName . $suffix ?>: "",
+                            <?php endforeach; ?>
+                            <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    };
+
+                if (typeof arguments[0] != 'undefined') {
+                    data = Object.assign(data, arguments[0]);
+                }
+
+                for (const [key, value] of Object.entries(dataTmpl)) {
+                    if (typeof data[key] === "undefined") {
+                        data[key] = "";
+                    }
+                }
+
+                Element.insert($('<?= /** @noEscape */ $htmlId ?>_container'), {
+                    bottom: this.template({
+                        data: data
+                    })
+                });
+
+                <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+                <?= $customFieldName; ?>('<?= $htmlId; ?>', '<?= $id; ?>', this, '<?= $parameterName ?>', data, data.index, false);
+                <?php endforeach; ?>
+
+                self.initSortable('<?= /** @noEscape */ $htmlId; ?>');
+
+                this.itemsCount++;
+            },
+
+            initSortable(htmlId) {
+                $j('#'+htmlId+'_container').sortable({
+                    handle : '.order-handle',
+                    start: function (event, ui) {
+                        let start_pos = ui.item.index();
+                        ui.item.data('start_pos', start_pos);
+                    },
+                    axis : 'y'
+                });
+            },
+
+            editItem: function(event) {
+                let self = this,
+                    tr = Event.findElement(event, 'tr'),
+                    index = $j(tr).attr("data-id"),
+                    editModal = $j("#<?= /** @noEscape */ $rowEditorId; ?>"),
+                    parameterName =  $j(tr).attr("data-parameter-name"),
+                    data = {};
+
+                // this is needed to keep the variable correct inside the modal context
+                window.mageosEditRowModalIndex = index;
+
+                editModal.html("");
+
+                $j(tr).find('input, select, textarea').each(function () {
+                    let input = $j(this);
+                    let field = input.attr("name") ? input.attr("name").split('[').pop().split(']')[0] : '';
+                    if (field) {
+                        data[field] = input.val();
+                    }
+                });
+                $j(tr).find('input, select, textarea').each(function () {
+                    let input = $j(this);
+                    let field = input.attr("name") ? input.attr("name").split('[').pop().split(']')[0] : '';
+                    if (field) {
+                        data[field] = input.val();
+                    }
+                });
+
+                data.index = index;
+                data.parameterName = parameterName;
+                let editForm = this.editTemplate({data: data});
+                editModal.append(editForm);
+                $j('#<?= /** @noEscape */ $rowEditorId; ?> > form').mage('validation',{})
+                $j(window).trigger('mageos_row_modal_edit_<?= /** @noEscape */ $htmlId ?>', {modal: Object.assign({}, editModal)});
+                self.initSortable('<?= /** @noEscape */ $htmlId; ?>');
+                let options = {
+                    type: 'slide',
+                    responsive: true,
+                    innerScroll: true,
+                    title: 'Edit Row',
+                    modalClass: 'repeatable_widget_edit_modal',
+                    opened: function () {
+                        self._editRowModal(data, index, this);
+                    },
+                    closed: function () {
+                        $j(this).html("");
+                    },
+                    buttons: [{
+                        text: 'Save',
+                        class: 'action-default scalable action-primary add-widget',
+                        click: function () {
+                            data = [];
+                            data['index'] = window.mageosEditRowModalIndex;
+                            data['parameterName'] = parameterName;
+                            data['form'] = $j(this.element[0]);
+                            if ($j('#<?= /** @noEscape */ $rowEditorId; ?> > form').validation('isValid')) {
+                                $j(window).trigger('mageos_row_modal_update_<?= /** @noEscape */ $htmlId ?>', {detail: Object.assign({}, data)});
+                                this.closeModal();
+                            }
+                        }
+                    }]
+                };
+                editModal.modal(options);
+                editModal.modal('openModal');
+
+                $j(window).off('mageos_row_modal_update_<?= $htmlId ?>').on('mageos_row_modal_update_<?= $htmlId ?>', function (event, data) {
+                    let parameterName = data.detail.parameterName;
+                    let index = data.detail.index;
+                    let extractedData = {};
+                    extractedData.parameterName = parameterName;
+                    extractedData.index = index;
+                    data.detail.form.find('input, select, textarea').each(function () {
+                        let input = $j(this);
+                        let field = input.data('name') ? input.data('name').split('[').pop().split(']')[0] : '';
+                        if (field) {
+                             extractedData[field] = input.val();
+                        }
+                    });
+
+                    for (const [key, value] of Object.entries(extractedData)) {
+
+                        <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+                        if (key === '<?= $customFieldData['type']; ?>') {
+                            continue;
+                        }
+                        <?php endforeach; ?>
+                        if ($j('[data-name="parameters[' + parameterName + '][' + index + '][' + key + ']"]').is("textarea")) {
+                            $j('[name="parameters[' + parameterName + '][' + index + '][' + key + ']"]').val(value);
+                        } else {
+                            $j('[name="parameters[' + parameterName + '][' + index + '][' + key + ']"]').val(value);
+                            $j('[name="parameters[' + parameterName + '][' + index + '][' + key + ']"]').attr("value", value);
+                        }
+                    }
+                    $j(window).trigger('mageos_row_modal_update_customfields_<?= /** @noEscape */ $htmlId ?>', {detail: extractedData});
+                    $j(window).off('mageos_row_modal_update_customfields_<?= /** @noEscape */ $htmlId ?>');
+                });
+                return false;
+            },
+            deleteItem: function (event) {
+                let self = this;
+                let tr = Event.findElement(event, 'tr');
+
+                if (tr) {
+                    Element.select(tr, '.delete').each(function (elem) {
+                        elem.value = '1'
+                    });
+                    Element.select(tr, ['input', 'select']).each(function (elem) {
+                        elem.hide()
+                    });
+                    Element.hide(tr);
+                    Element.addClassName(tr, 'no-display template').remove();
+                    this.itemsCount--;
+                }
+
+                self.initSortable('<?= /** @noEscape */ $htmlId; ?>');
+                return false;
+            },
+            _editRowModal: function(data, index, modal) {
+                <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+                <?= $customFieldName; ?>('<?= $htmlId; ?>', '<?= $id; ?>', this, '<?= $parameterName ?>', data, index, true, modal);
+                <?php endforeach; ?>
+            }
+        };
+        <?php foreach ($this->getCustomFields() as $customFieldName => $customFieldData): ?>
+        <?= /** @noEscape */ $htmlId; ?>RowsControl.<?= $customFieldName; ?> = <?= $customFieldName ?>Row;
+        <?php endforeach; ?>
+        window.<?= /** @noEscape */ $htmlId; ?>RowsControl = <?= /** @noEscape */ $htmlId; ?>RowsControl;
+
+        <?php foreach ($block->getValues() as $rowData): ?>
+            <?= /** @noEscape */ $htmlId; ?>RowsControl.addItem(<?= /** @noEscape */ json_encode($rowData); ?>);
+        <?php endforeach; ?>
+
+        $j('#repeatable_widget_<?= $htmlId; ?>').closest('form.admin__field')
+            .on('invalid-form.validate', function(event, validator) {
+                if ($j('#repeatable_widget_<?= $htmlId; ?>').find('.mage-error').length > 0) {
+                    $j('#repeatable_widget_<?= $htmlId; ?>').addClass("validation-error");
+                }
+            });
+    });
+</script>

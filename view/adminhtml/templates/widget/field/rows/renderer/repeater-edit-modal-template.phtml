@@ -1,0 +1,60 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$element = $block->getData('element');
+$htmlId = $element->getHtmlId();
+$htmlName = $element->getName();
+$fields = $block->getData('fields');
+$parameterName = $block->getData('parameterName');
+?>
+<form class="<?= /** @noEscape */ $htmlId; ?>">
+    <div class="admin__fieldset">
+        <?php foreach ($fields as $fieldName => $fieldData): ?>
+        <?php
+        $isRequired = isset($fieldData['required']) && $fieldData['required'];
+        ?>
+        <div class="admin__field field <?= $isRequired ? ' required _required': ''; ?>">
+            <label class="label admin__field-label">
+                <span><?= /** @noEscape */ $escaper->escapeJs($fieldData["label"]); ?></span>
+            </label>
+            <div class="admin__field-control control">
+                <?php if ($fieldData['type'] === 'text'): ?>
+                <input type="text"
+                       data-type="<?= /** @noEscape */ $fieldData['type'] ?>"
+                       name="<?= /** @noEscape */ $fieldName; ?>"
+                       data-name="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+                       id="edit_<?= /** @noEscape */ "select_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+                       value="<%- data.<?= /** @noEscape */ $fieldName; ?> %>"
+                       <?php if ($isRequired): ?>
+                       aria-invalid="false"
+                       <?php endif; ?>
+                       class="widget-option input-text admin__control-text <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>"/>
+                <?php endif; ?>
+
+                <?php if ($fieldData['type'] === 'textarea'): ?>
+                <textarea data-type="<?= /** @noEscape */ $fieldData['type'] ?>"
+                          name="<?= /** @noEscape */ $fieldName; ?>"
+                          data-name="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+                          id="edit_<?= /** @noEscape */ "select_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+                          <?php if ($isRequired): ?>
+                          aria-invalid="false"
+                          <?php endif; ?>
+                          class="widget-option input-textarea admin__control-text <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>"><%- data.<?= /** @noEscape */ $fieldName; ?> %></textarea>
+                <?php endif; ?>
+
+                <?= $block->addCustomField($fieldName, $fieldData['type'], $parameterName, $htmlId, $htmlName, $fieldData, true); ?>
+
+                <?php if (isset($fieldData["description"])): ?>
+                <div class="note admin__field-note"><?= /** @noEscape */ $escaper->escapeJs($fieldData["description"]); ?></div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</form>

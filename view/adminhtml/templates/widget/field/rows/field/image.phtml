@@ -1,0 +1,52 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$fieldName = $block->getData('fieldName');
+$parameterName = $block->getData('parameterName');
+$htmlId = $block->getData('htmlId');
+$htmlName = $block->getData('htmlName');
+$fieldData = $block->getData('fieldData');
+$isModal = $block->getData('isModal');
+$isRequired = isset($fieldData['required']) && $fieldData['required'];
+?>
+<div class="admin__image-field">
+    <button type="button" class="action-default scalable primary"
+            <?php if ($isModal): ?>
+            id="<?= /** @noEscape */ "edit_image_button_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+            <?php else: ?>
+            id="<?= /** @noEscape */ "image_button_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+            <?php endif; ?>>
+        <span><?= $escaper->escapeHtml(__('Upload'));?></span>
+    </button>
+    <input data-field="<?= /** @noEscape */ $fieldName; ?>"
+            <?php if ($isModal): ?>
+            id="<?= /** @noEscape */ "edit_image_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+            data-name="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+            <?php else: ?>
+            id="<?= /** @noEscape */ "image_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+            <?php endif; ?>
+            data-type="<?= /** @noEscape */ $fieldData['type'] ?>"
+            name="<?= /** @noEscape */ $htmlName; ?>[<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+            type="hidden" value="<%- data.<?= /** @noEscape */ $fieldName; ?> %>"
+            value="<%- data.<?=  $fieldName; ?> %>"
+            <?php if ($isRequired): ?>
+            aria-invalid="false"
+            <?php endif; ?>
+            class="image-input <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>" />
+    <div class="file-uploader-preview" style="display:none">
+        <a target="_blank" href="">
+            <img class="preview-image" tabindex="0" src="" />
+        </a>
+        <div class="actions">
+            <button type="button" class="action-remove" data-linked-input="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]">
+                <span><?= /** @noEscape */ $escaper->escapeJs(__('Delete image')); ?></span>
+            </button>
+        </div>
+    </div>
+</div>

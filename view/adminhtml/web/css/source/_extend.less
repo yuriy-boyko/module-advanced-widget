@@ -1,0 +1,60 @@
+.admin__fieldset > .admin__field {
+    &.repeatable_widget {
+        > .admin__field-label {
+            text-align: left;
+        }
+        > .admin__field-control {
+            width: calc(~'100% - 24px');
+            float: none;
+            .order-handle {
+                position: relative;
+                .icon-grid:before {
+                    -webkit-font-smoothing: antialiased;
+                    font-family: 'Admin Icons';
+                    font-style: normal;
+                    font-weight: normal;
+                    line-height: 1;
+                    speak: none;
+                    color: #7f7c7a;
+                    content: '\e617';
+                    cursor: move;
+                    cursor: grab;
+                    cursor: -moz-grab;
+                    cursor: -webkit-grab;
+                    display: block;
+                    font-size: 16px;
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+            }
+            .repeater-column {
+                vertical-align: top;
+                padding: 20px 10px;
+                .repeater-column__content {
+                    display: flex;
+                    flex-wrap: wrap;
+                    &.with_tooltip {
+                        > .admin__field-tooltip {
+                            padding-left: 10px;
+                            width: 50px;
+                        }
+                        > :not(:first-child) {
+                            width: calc(~"100% - 60px");
+                        }
+                    }
+                    .admin__image-field {
+                        position: relative;
+                    }
+                }
+            }
+            .col-delete {
+                vertical-align: top;
+                padding: 20px 10px;
+            }
+        }
+        &.validation-error {
+            border: solid 1px red;
+        }
+    }
+}
