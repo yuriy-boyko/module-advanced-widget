@@ -144,10 +144,14 @@ class Repeatable extends Template implements FormElementRenderer
             foreach ($rows as $index => $row) {
                 foreach ($row as $key => $value) {
                     if (isset($row[$key]) && $row[$key] !== "" && strpos($key, "product") === 0) {
-                        $product = $this->productRepository->getById((int)$row[$key]);
-                        $rows[$index][$key . "_sku"] = $product->getSku();
-                        $rows[$index][$key . "_name"] = $product->getName();
-                        $rows[$index][$key . "_image"] = $this->imageHelper->init($product, 'product_listing_thumbnail')->getUrl();
+                        try {
+                            $product = $this->productRepository->getById((int)$row[$key]);
+                            $rows[$index][$key . "_sku"] = $product->getSku();
+                            $rows[$index][$key . "_name"] = $product->getName();
+                            $rows[$index][$key . "_image"] = $this->imageHelper->init($product, 'product_listing_thumbnail')->getUrl();
+                        } catch (\Exception $e) {
+                            unset($rows[$index]);
+                        }
                     }
                 }
             }
