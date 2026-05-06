@@ -44,12 +44,12 @@ class Repeatable extends Template implements FormElementRenderer
      * @param array $data
      */
     public function __construct(
-        private Context $context,
-        private Http $request,
-        private ProductRepositoryInterface $productRepository,
-        private CollectionFactory $productCollectionFactory,
-        private ImageHelper $imageHelper,
-        private array $customFields = [],
+        protected Context $context,
+        protected Http $request,
+        protected ProductRepositoryInterface $productRepository,
+        protected CollectionFactory $productCollectionFactory,
+        protected ImageHelper $imageHelper,
+        protected array $customFields = [],
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -125,7 +125,7 @@ class Repeatable extends Template implements FormElementRenderer
      */
     public function getParameterName()
     {
-        $parameterName = $this->element->getName();
+        $parameterName = (string)$this->element->getName();
         if (preg_match('/\[(.*?)\]/', $parameterName, $matches) && isset($matches[1])) {
             $parameterName = $matches[1];
         }
@@ -158,7 +158,7 @@ class Repeatable extends Template implements FormElementRenderer
             $values = json_encode($rows);
             return json_decode($values, true) ?: [];
         } else {
-            $values = str_replace("'", '"', $this->getElement()->getValue());
+            $values = str_replace("'", '"', (string)$this->getElement()->getValue());
             return json_decode(str_replace("&#039;", '"', $values), true) ?: [];
         }
     }

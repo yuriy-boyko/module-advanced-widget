@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 1.2.0 - 2026-04-21
+### Fixed
+- PHP 8.5 compatibility: cast nullable values to string before passing to `str_replace`, `strpos`, `str_contains`, `preg_match`, `explode`, `urldecode` and similar string functions to avoid deprecation notices and fatal errors
+- Cast nullable values to string/int before using as array index (PHP 8.5 null array key deprecation)
+- Replace deprecated `strpos` / `strpos(..., 'http') === false` usages with `str_starts_with` / `str_contains`
+- Add `declare(strict_types=1)` and missing return type hints to `Controller/Adminhtml/Image/Chooser`
+- Clean up redundant `$this->escaper = $escaper ?: ObjectManager::getInstance()->get(...)` fallback in `Controller/Adminhtml/Product/Widget/Chooser` (constructor already enforces non-null Escaper)
+
+### Changed
+- Change remaining `private` promoted/regular properties to `protected` for consistent extensibility across all classes
+
 ## 1.1.2
 ### Fixed
 - Fix getRowClickCallback() returning null instead of string when massaction is enabled

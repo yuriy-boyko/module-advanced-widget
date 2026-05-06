@@ -5,7 +5,6 @@ namespace MageOS\AdvancedWidget\Controller\Adminhtml\Product\Widget;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\Result\RawFactory;
 use Magento\Framework\Escaper;
@@ -22,13 +21,12 @@ class Chooser extends \Magento\Backend\App\Action implements HttpPostActionInter
      * @param Escaper $escaper
      */
     public function __construct(
-        private Context $context,
-        private RawFactory $resultRawFactory,
-        private LayoutFactory $layoutFactory,
-        private Escaper $escaper
+        Context $context,
+        protected RawFactory $resultRawFactory,
+        protected LayoutFactory $layoutFactory,
+        protected Escaper $escaper
     ) {
         parent::__construct($context);
-        $this->escaper = $escaper ?: ObjectManager::getInstance()->get(Escaper::class);
     }
 
     /**
@@ -38,7 +36,7 @@ class Chooser extends \Magento\Backend\App\Action implements HttpPostActionInter
      */
     public function execute(): Raw
     {
-        $uniqId = $this->getRequest()->getParam('uniq_id');
+        $uniqId = (string)$this->getRequest()->getParam('uniq_id');
         $massAction = $this->getRequest()->getParam('use_massaction', false);
         $productTypeId = $this->getRequest()->getParam('product_type_id', null);
 

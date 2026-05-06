@@ -13,7 +13,7 @@ class Title extends Template implements FormElementRenderer
     /**
      * @var AbstractElement
      */
-    private AbstractElement $element;
+    protected AbstractElement $element;
 
     /**
      * @var string
@@ -45,7 +45,7 @@ class Title extends Template implements FormElementRenderer
      */
     public function getValues(): mixed
     {
-        $values = $this->getElement()->getValue();
+        $values = (string)$this->getElement()->getValue();
         return json_decode(urldecode($values), true) ?: [];
     }
 }

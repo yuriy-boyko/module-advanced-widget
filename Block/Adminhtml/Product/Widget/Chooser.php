@@ -76,7 +76,7 @@ class Chooser extends \Magento\Catalog\Block\Adminhtml\Product\Widget\Chooser
      */
     public function prepareElementHtml(AbstractElement $element): AbstractElement
     {
-        $uniqId = $this->mathRandom->getUniqueHash($element->getId());
+        $uniqId = $this->mathRandom->getUniqueHash((string)$element->getId());
         $sourceUrl = $this->getUrl(
             'advanced_widget/product_widget/chooser',
             ['uniq_id' => $uniqId, 'use_massaction' => false]
@@ -97,7 +97,7 @@ class Chooser extends \Magento\Catalog\Block\Adminhtml\Product\Widget\Chooser
         );
 
         if ($element->getValue()) {
-            $value = explode('/', $element->getValue());
+            $value = explode('/', (string)$element->getValue());
             $productId = false;
             if (isset($value[0]) && isset($value[1]) && $value[0] == 'product') {
                 $productId = $value[1];

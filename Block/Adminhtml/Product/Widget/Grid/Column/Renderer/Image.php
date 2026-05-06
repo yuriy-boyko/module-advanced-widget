@@ -20,9 +20,9 @@ class Image extends AbstractRenderer
      * @param array $data
      */
     public function __construct(
-        private Context $context,
-        private ProductRepositoryInterface $productRepository,
-        private ImageHelper $imageHelper,
+        protected Context $context,
+        protected ProductRepositoryInterface $productRepository,
+        protected ImageHelper $imageHelper,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -43,6 +43,6 @@ class Image extends AbstractRenderer
         if (!$imageUrl) {
             return '';
         }
-        return '<img src="' . $imageUrl . '" width="75" height="75" alt="' . $row->getName() . '"/>';
+        return '<img src="' . $imageUrl . '" width="75" height="75" alt="' . (string)$row->getName() . '"/>';
     }
 }

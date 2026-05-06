@@ -41,7 +41,7 @@ class Rows extends Template
     {
         /** @var Repeatable $fieldRenderer */
         $fieldRenderer = $this->getLayout()->createBlock(Repeatable::class);
-        if(str_contains($element->getName(),'repeatable_') && !empty($element->getValue())) {
+        if (str_contains((string)$element->getName(), 'repeatable_') && !empty($element->getValue())) {
             $element->setData('value', $this->conditions->decode($element->getValue()));
         }
         $fieldRenderer->setRows($this->rows);

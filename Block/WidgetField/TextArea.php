@@ -17,7 +17,7 @@ class TextArea extends \Magento\Backend\Block\Template
      */
     public function __construct(
         Context $context,
-        private Factory $elementFactory,
+        protected Factory $elementFactory,
         array $data = []
     ) {
         parent::__construct($context, $data);

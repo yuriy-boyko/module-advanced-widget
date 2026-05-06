@@ -19,7 +19,7 @@ class AbstractColumns extends Template implements BlockInterface
      * @param array $data
      */
     public function __construct(
-        private Conditions $conditionsHelper,
+        protected Conditions $conditionsHelper,
         Context $context,
         array $data = []
     ) {
@@ -88,12 +88,12 @@ class AbstractColumns extends Template implements BlockInterface
      */
     public function getImageUrl(string $imageField = 'image'): string
     {
-        $url = $this->getData($imageField);
+        $url = (string)$this->getData($imageField);
         if (!$url) {
             return '';
         }
 
-        if (strpos($url, $this->getMediaUrl()) !== 0) {
+        if (!str_starts_with($url, $this->getMediaUrl())) {
             return $this->getMediaUrl() . '/' . $url;
         }
 
@@ -117,8 +117,9 @@ class AbstractColumns extends Template implements BlockInterface
      */
     public function getPreparedUrl($urlLink): string
     {
+        $urlLink = (string)$urlLink;
         $preparedLink = $urlLink;
-        if (strpos($urlLink, 'http') === false) {
+        if (!str_contains($urlLink, 'http')) {
             $urlLink = explode('?', $urlLink);
             $preparedLink = $this->getUrl(trim($urlLink[0], '/'));
             if (!empty($urlLink[1])) {
@@ -134,6 +135,6 @@ class AbstractColumns extends Template implements BlockInterface
      */
     public function getPreparedDescription(string $descriptionField = 'description'): string
     {
-        return str_replace('\EOL', '<br />', $this->getData($descriptionField));
+        return str_replace('\EOL', '<br />', (string)$this->getData($descriptionField));
     }
 }

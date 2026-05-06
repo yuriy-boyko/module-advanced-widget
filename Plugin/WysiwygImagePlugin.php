@@ -16,11 +16,15 @@ class WysiwygImagePlugin
     /**
      * @var DirectoryRead
      */
-    private DirectoryRead $mediaDir;
+    protected DirectoryRead $mediaDir;
 
+    /**
+     * @param FileSystem $fileSystem
+     * @param RequestInterface $request
+     */
     public function __construct(
         FileSystem $fileSystem,
-        private RequestInterface $request
+        protected RequestInterface $request
     ) {
         $this->mediaDir = $fileSystem->getDirectoryRead(DirectoryList::MEDIA);
     }
@@ -69,7 +73,7 @@ class WysiwygImagePlugin
      * @param bool $renderAsTag
      * @return bool
      */
-    private function shouldResultBeRelativePath(bool $renderAsTag): bool
+    protected function shouldResultBeRelativePath(bool $renderAsTag): bool
     {
         if (!$renderAsTag && $this->request->getParam('widget')) {
             return true;

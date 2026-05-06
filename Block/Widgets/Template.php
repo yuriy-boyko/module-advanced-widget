@@ -98,7 +98,7 @@ class Template extends \Magento\Framework\View\Element\Template implements \Mage
             [$parameter, $empty, $negate, $name] = $match;
 
             $regex = isset($match[4]) ? "/^({$match[4]})$/" : '';
-            $value = $params[$name] ?? '';
+            $value = $params[(string)$name] ?? '';
             $result = $regex
                 ? preg_match($regex, $value)
                 : $value || (is_string($value) && $value !== '');
