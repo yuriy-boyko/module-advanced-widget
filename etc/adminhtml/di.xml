@@ -26,6 +26,16 @@
                     <item name="mainFormHtmlBlock" xsi:type="object">MageOS\AdvancedWidget\Block\Adminhtml\Product\Widget\Chooser</item>
                     <item name="template" xsi:type="string">MageOS_AdvancedWidget::widget/field/rows/field/product.phtml</item>
                 </item>
+                <item name="wysiwygFields" xsi:type="array">
+                    <item name="type" xsi:type="string">wysiwyg</item>
+                    <item name="component" xsi:type="string">MageOS_AdvancedWidget/js/field/wysiwyg</item>
+                    <item name="template" xsi:type="string">MageOS_AdvancedWidget::widget/field/rows/field/wysiwyg.phtml</item>
+                </item>
+                <item name="colorpickerFields" xsi:type="array">
+                    <item name="type" xsi:type="string">colorpicker</item>
+                    <item name="component" xsi:type="string">MageOS_AdvancedWidget/js/field/colorpicker</item>
+                    <item name="template" xsi:type="string">MageOS_AdvancedWidget::widget/field/rows/field/colorpicker.phtml</item>
+                </item>
             </argument>
         </arguments>
     </type>

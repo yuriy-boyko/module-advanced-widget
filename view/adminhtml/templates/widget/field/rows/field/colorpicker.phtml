@@ -1,0 +1,31 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Backend\Block\Template;
+use Magento\Framework\Escaper;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$fieldName = $block->getData('fieldName');
+$parameterName = $block->getData('parameterName');
+$htmlId = $block->getData('htmlId');
+$htmlName = $block->getData('htmlName');
+$fieldData = $block->getData('fieldData');
+$isModal = $block->getData('isModal');
+$isRequired = isset($fieldData['required']) && $fieldData['required'];
+?>
+<input data-field="<?= /** @noEscape */ $fieldName; ?>"
+    <?php if ($isModal): ?>
+        id="<?= /** @noEscape */ "edit_colorpicker_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+        data-name="parameters[<?= $parameterName; ?>][<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+    <?php else: ?>
+        id="<?= /** @noEscape */ "colorpicker_{$htmlId}_{$fieldName}_<%- data.index %>"; ?>"
+    <?php endif; ?>
+       data-type="<?= /** @noEscape */ $fieldData['type'] ?>"
+       name="<?= /** @noEscape */ $htmlName; ?>[<%- data.index %>][<?= /** @noEscape */ $fieldName; ?>]"
+       value="<%- data.<?=  $fieldName; ?> %>"
+    <?php if ($isRequired): ?>
+        aria-invalid="false"
+    <?php endif; ?>
+       class="widget-option input-text admin__control-text <?php if ($isRequired): ?>required-entry _required valid<?php endif; ?>" />

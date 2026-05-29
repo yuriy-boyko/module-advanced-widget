@@ -28,7 +28,7 @@ class AbstractColumns extends Template implements BlockInterface
 
 
     public function getRepeatableField(string $name): array {
-        $field = $this->getData($name);
+        $field = $this->getData($name) ?: [];
         if (is_string($field)) {
             return $field ? $this->conditionsHelper->decode($field) : [];
         }
