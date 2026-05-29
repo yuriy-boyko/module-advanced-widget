@@ -24,8 +24,8 @@ class Chooser extends \Magento\Cms\Controller\Adminhtml\Wysiwyg\Images\OnInsert
     public function __construct(
         Context $context,
         Registry $coreRegistry,
-        protected RawFactory $resultRawFactory,
-        protected GetInsertImageContent $getInsertImageContent,
+        RawFactory $resultRawFactory,
+        GetInsertImageContent $getInsertImageContent,
         protected StoreManagerInterface $storeManager
     ) {
         parent::__construct($context, $coreRegistry, $resultRawFactory, $getInsertImageContent);
