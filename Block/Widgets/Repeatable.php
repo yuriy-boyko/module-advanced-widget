@@ -18,6 +18,8 @@ class Repeatable extends AbstractColumns implements BlockInterface
     {
         $content = $this->getConditions();
 
+        dd($content);
+
         if ($content && is_array($content)) {
             return array_map(
                 function ($data) {
