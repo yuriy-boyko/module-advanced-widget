@@ -14,6 +14,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 class Chooser extends \Magento\Cms\Controller\Adminhtml\Wysiwyg\Images\OnInsert
 {
+
     /**
      * @param Context $context
      * @param Registry $coreRegistry
@@ -25,7 +26,7 @@ class Chooser extends \Magento\Cms\Controller\Adminhtml\Wysiwyg\Images\OnInsert
         Context $context,
         Registry $coreRegistry,
         RawFactory $resultRawFactory,
-        GetInsertImageContent $getInsertImageContent,
+        private GetInsertImageContent $getInsertImageContent,
         protected StoreManagerInterface $storeManager
     ) {
         parent::__construct($context, $coreRegistry, $resultRawFactory, $getInsertImageContent);
@@ -41,8 +42,8 @@ class Chooser extends \Magento\Cms\Controller\Adminhtml\Wysiwyg\Images\OnInsert
         $mediaUrl = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
         $content = $this->getInsertImageContent->execute(
             $data['filename'],
-            $data['force_static_path'],
-            $data['as_is'],
+            (bool) $data['force_static_path'],
+            (bool) $data['as_is'],
             isset($data['store']) ? (int) $data['store'] : null
         );
         $content = str_replace($mediaUrl, '', (string)$content);
